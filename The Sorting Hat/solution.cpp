@@ -78,9 +78,10 @@ int main()
         if(s=="min")
         {
             if(l==r)std::cout<<"error";
-            else{
+            else
+            {
                 int answer=query(0, 0, 200001, l, r-1);
-                 std::cout<<answer;
+                std::cout<<answer;
             }
         }
         std::cout<<"\n";
