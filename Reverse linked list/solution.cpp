@@ -34,6 +34,7 @@ struct lilist
     }
 };
 int main()
+    
 {
     std::string s;
     while(getline(std::cin, s))
