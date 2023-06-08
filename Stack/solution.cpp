@@ -1,44 +1,74 @@
+
 #include <iostream>
 #include <vector>
+
+using namespace std;
+
+template <typename T>
+struct Stack {
+  vector<T> v;
+  int top;
+
+  Stack() {
+    top = -1;
+    v.resize(100005);
+  }
+
+  void Push(T x) {
+    top++;
+    v[top] = x;
+  }
+
+  T Pop() {
+    if (top == -1) {
+      cerr << "error" << endl;
+      return T();
+    }
+    T x = v[top];
+    top--;
+    return x;
+  }
+
+  T Top() {
+    if (top == -1) {
+      cerr << "error" << endl;
+      return T();
+    }
+    return v[top];
+  }
+
+  bool Empty() { return (top == -1); }
+  int Size() { return top + 1; }
+  void Clear() { top = -1; }
+};
+
 int main() {
-  std::string s;
-  std::vector<int> v(100005);
-  for (int i = 0; i < 100004; i++) v[i] = -1;
-  int flag = 0;
-  while (std::cin >> s) {
-    if (s == "exit") {
-      std::cout << "bye";
+  Stack<int> s;
+  string str;
+
+  while (cin >> str) {
+    if (str == "exit") {
+      cout << "bye" << endl;
       break;
     }
-    if (s == "push") {
+    if (str == "push") {
       int x;
-      std::cin >> x;
-      v[flag] = x;
-      flag++;
-      std::cout << "ok";
+      cin >> x;
+      s.Push(x);
+      cout << "ok" << endl;
     }
-    if (s == "pop") {
-      if (flag == 0) {
-        std::cout << "error";
-      } else {
-        std::cout << v[flag - 1];
-        v[flag - 1] = -1;
-        flag--;
-      }
+    if (str == "pop") {
+      cout << s.Pop() << endl;
     }
-    if (s == "size") {
-      std::cout << flag;
+    if (str == "size") {
+      cout << s.Size() << endl;
     }
-    if (s == "back") {
-      if (flag == 0)
-        std::cout << "error";
-      else
-        std::cout << v[flag - 1];
+    if (str == "back") {
+      cout << s.Top() << endl;
     }
-    if (s == "clear") {
-      std::cout << "ok";
-      flag = 0;
+    if (str == "clear") {
+      s.Clear();
+      cout << "ok" << endl;
     }
-    std::cout << "\n";
   }
 }
