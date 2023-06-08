@@ -1,71 +1,50 @@
 #include <iostream>
-#define MOD 1e7 + 4321;
-int n, k, a0, a1, an1, an2, mod;
-int a[10000010];
-void Init() {
-  for (int i = 0; i <= n; i++) {
-    a[i] = 0;
+
+template <class T>
+struct Sequence {
+  int n1;
+  T* temp;
+  T first;
+  T second;
+  Sequence(int n, T first, T second) {
+    n1 = n;
+    temp = new T[n1];
+    temp[0] = first;
+    temp[1] = second;
+    Fill();
   }
-  a[0] = a0;
-  a[1] = a1;
-  an1 = a1;
-  an2 = a0;
-}
-void Generate() {
-  for (int i = 2; i < n; i++) {
-    a[i] = an1 * 123 + an2 * 45;
-    an2 = an1 % mod;
-    an1 = a[i] % mod;
-    a[i] = a[i] % mod;
-  }
-}
-int Solve() {
-  using std::swap;
-  for (int l = 0, r = n - 1;;) {
-    if (r <= l + 1) {
-      if (r == l + 1 and a[r] < a[l]) {
-        swap(a[l], a[r]);
-      }
-      return a[k];
-    }
-    int mid = (l + r) >> 1;
-    swap(a[mid], a[l + 1]);
-    if (a[l] > a[r]) {
-      swap(a[l], a[r]);
-    }
-    if (a[l + 1] > a[r]) {
-      swap(a[l + 1], a[r]);
-    }
-    if (a[l] > a[l + 1]) {
-      swap(a[l], a[l + 1]);
-    }
-    int i = l + 1, j = r;
-    int aux = a[l + 1];
-    while (1) {
-      while (a[++i] < aux) {
-      };
-      while (a[--j] > aux) {
-      };
-      if (i > j) {
-        break;
-      }
-      swap(a[i], a[j]);
-    }
-    a[l + 1] = a[j];
-    a[j] = aux;
-    if (j >= k) {
-      r = j - 1;
-    }
-    if (j <= k) {
-      l = i;
+  void Fill() {
+    for (int i = 2; i < n1; i++) {
+      temp[i] = (temp[i - 1] * 123 + temp[i - 2] * 45) % (10000000 + 4321);
     }
   }
-}
+  int Partition(int left, int right) {
+    if (left != right)
+      std::swap(temp[left + rand() % (right - left)], temp[right]);
+    T x = temp[right];
+    int i = left - 1;
+    for (int j = left; j <= right; j++) {
+      if (temp[j] <= x) std::swap(temp[++i], temp[j]);
+    }
+    return i;
+  }
+  T Find(int k) {
+    int left = 0, right = n1 - 1;
+    for (;;) {
+      int pos = Partition(left, right);
+      if (pos < k)
+        left = pos + 1;
+      else if (pos > k)
+        right = pos - 1;
+      else
+        return temp[k];
+    }
+  }
+  ~Sequence() { delete[] temp; }
+};
 int main() {
+  int n, k, a0, a1;
   std::cin >> n >> k >> a0 >> a1;
-  mod = MOD;
-  Init();
-  Generate();
-  k--;
-  std::cout << Solve() << '\n';
+  Sequence<long long int> s1 = Sequence<long long int>(n, a0, a1);
+  std::cout << s1.Find(k - 1) << std::endl;
 }
