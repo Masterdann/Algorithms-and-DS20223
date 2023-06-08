@@ -2,11 +2,9 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
-
 template <typename T>
 struct Stack {
-  vector<T> v;
+  std::vector<T> v;
   int top;
 
   Stack() {
@@ -21,7 +19,7 @@ struct Stack {
 
   T Pop() {
     if (top == -1) {
-      cerr << "error" << endl;
+      std::cout << "error" << '\n';
       return T();
     }
     T x = v[top];
@@ -31,7 +29,7 @@ struct Stack {
 
   T Top() {
     if (top == -1) {
-      cerr << "error" << endl;
+      std::cout << "error" << '\n';
       return T();
     }
     return v[top];
@@ -40,35 +38,36 @@ struct Stack {
   bool Empty() { return (top == -1); }
   int Size() { return top + 1; }
   void Clear() { top = -1; }
+  ~Stack(){};
 };
 
 int main() {
   Stack<int> s;
-  string str;
+  std::string str;
 
-  while (cin >> str) {
+  while (std::cin >> str) {
     if (str == "exit") {
-      cout << "bye" << endl;
+      std::cout << "bye" << '\n';
       break;
     }
     if (str == "push") {
       int x;
-      cin >> x;
+      std::cin >> x;
       s.Push(x);
-      cout << "ok" << endl;
+      std::cout << "ok" << '\n';
     }
     if (str == "pop") {
-      cout << s.Pop() << endl;
+      std::cout << s.Pop() << '\n';
     }
     if (str == "size") {
-      cout << s.Size() << endl;
+      std::cout << s.Size() << '\n';
     }
     if (str == "back") {
-      cout << s.Top() << endl;
+      std::cout << s.Top() << '\n';
     }
     if (str == "clear") {
       s.Clear();
-      cout << "ok" << endl;
+      std::cout << "ok" << '\n';
     }
   }
 }
