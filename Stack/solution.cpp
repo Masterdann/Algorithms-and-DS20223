@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 
@@ -9,7 +8,7 @@ struct Stack {
 
   Stack() {
     top = -1;
-    v.resize(100005);
+    v = std::vector<T>(100001);
   }
 
   void Push(T x) {
@@ -19,7 +18,7 @@ struct Stack {
 
   T Pop() {
     if (top == -1) {
-      std::cout << "error" << '\n';
+      std::cout << "error";
       return T();
     }
     T x = v[top];
@@ -29,7 +28,7 @@ struct Stack {
 
   T Top() {
     if (top == -1) {
-      std::cout << "error" << '\n';
+      std::cout << "error";
       return T();
     }
     return v[top];
