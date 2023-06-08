@@ -8,9 +8,9 @@ struct Node {
     next = NULL;
   }
 };
-struct Lilist {
+struct List {
   Node* head;
-  Lilist() { head = NULL; }
+  List() { head = NULL; }
   void Print() {
     struct Node* puntero = head;
     while (puntero != NULL) {
@@ -23,11 +23,12 @@ struct Lilist {
     puntero->next = head;
     head = puntero;
   }
+  ~List(){}
 };
 int main() {
   std::string s;
   while (getline(std::cin, s)) {
-    Lilist lista;
+    List lista;
     int n = s.size();
     for (int i = 0; i < n; i++) {
       lista.Push(s[i]);
