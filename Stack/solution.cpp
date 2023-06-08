@@ -1,43 +1,72 @@
 #include <iostream>
+#include <vector>
 
-int main()
-{
-    std::string s;
-    int v[100005];
-    for(int i=0;i<100004;i++)v[i]=-1;
-    int flag=0;
-    while(std::cin>>s){
-        if(s=="exit"){
-            std::cout<<"bye";
-            break;
-        }
-        if(s=="push"){
-            int x;
-            std::cin>>x;
-            v[flag]=x;
-            flag++;
-            std::cout<<"ok";
-        }
-        if(s=="pop"){
-            if(flag==0){
-                std::cout<<"error";
-            }else{
-            std::cout<<v[flag-1];
-            v[flag-1]=-1;
-            flag--;}
-        }
-        if(s=="size"){
-            std::cout<<flag;
-        }
-        if(s=="back"){
-            if(flag==0)std::cout<<"error";
-        else
-            std::cout<<v[flag-1];
-        }
-        if(s=="clear"){
-            std::cout<<"ok";
-            flag=0;
-        }
-        std::cout<<"\n";
+template <typename T>
+struct Stack {
+  std::vector<T> v;
+  int top;
+
+  Stack() {
+    top = -1;
+    v = std::vector<T>(100001);
+  }
+
+  void Push(T x) {
+    top++;
+    v[top] = x;
+  }
+
+  T Pop() {
+    if (top == -1) {
+      std::cout << "error";
+      return T();
     }
+    T x = v[top];
+    top--;
+    return x;
+  }
+
+  T Top() {
+    if (top == -1) {
+      std::cout << "error";
+      return T();
+    }
+    return v[top];
+  }
+
+  bool Empty() { return (top == -1); }
+  int Size() { return top + 1; }
+  void Clear() { top = -1; }
+  ~Stack(){};
+};
+
+int main() {
+  Stack<int> s;
+  std::string str;
+
+  while (std::cin >> str) {
+    if (str == "exit") {
+      std::cout << "bye" << '\n';
+      break;
+    }
+    if (str == "push") {
+      int x;
+      std::cin >> x;
+      s.Push(x);
+      std::cout << "ok" << '\n';
+    }
+    if (str == "pop") {
+      std::cout << s.Pop() << '\n';
+    }
+    if (str == "size") {
+      std::cout << s.Size() << '\n';
+    }
+    if (str == "back") {
+      std::cout << s.Top() << '\n';
+    }
+    if (str == "clear") {
+      s.Clear();
+      std::cout << "ok" << '\n';
+    }
+  }
 }
