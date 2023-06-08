@@ -1,27 +1,46 @@
 #include <iostream>
 
-int v[100030];
-bool bs(int l, int r, int t){
-    r--;
-    while(l<r){
-        int mid=(l+r)/2;
-        if(v[mid]<t)l=mid+1;
-        else r=mid;
+template <class T>
+bool BinarySearch(T* l, T* r, T val) {
+  r = r - 1;
+  while (l < r) {
+    T* mid = l + ((r - l) / 2);
+    if (*(mid) == val) {
+      return true;
     }
-    return t==v[l];
+    if (*(mid) < val) {
+      l = mid + 1;
+    } else {
+      r = mid;
+    }
+  }
+  return false;
 }
-int main()
-{
-    int n;
-    while(std::cin>>n){
-        for(int i=0;i<n;i++)std::cin>>v[i];
-        int q;
-        std::cin>>q;
-        while(q--){
-            int l, r, t;
-            std::cin>>l>>r>>t;
-            if(bs( l,  r ,  t))std::cout<<"YES"<<"\n";
-            else std::cout<<"NO"<<"\n";
-        }
+int main() {
+  int n;
+  std::cin >> n;
+  int* arr = new int[n];
+  for (int i = 0; i < n; i++) {
+    std::cin >> arr[i];
+  }
+  int q;
+  std::cin >> q;
+  int l;
+  int r;
+  while (q > 0) {
+    int val;
+    std::cin >> l >> r >> val;
+    int* start = &arr[l];
+    int* end = &(arr[r]);
+    end += 1;
+    bool ans = BinarySearch<int>(start, end, val);
+    if (ans) {
+      std::cout << "YES"<<'\n';
+    } else {
+      std::cout << "NO"<<'\n';
     }
+    q--;
+  }
+  delete[] arr;
+  return 0;
 }
