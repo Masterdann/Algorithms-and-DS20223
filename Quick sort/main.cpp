@@ -1,59 +1,49 @@
-#include <algorithm>
 #include <iostream>
-#include <vector>
 
-int Partition(std::vector<int>& v, int low, int high) {
-  int pivot = v[(low + high) / 2];
-  int i = low - 1;
-  int j = high + 1;
-  while (true) {
-    do {
-      i++;
-    } while (v[i] < pivot);
-
-    do {
-      j--;
-    } while (v[j] > pivot);
-
-    if (i >= j) {
-      return j;
+template <typename T>
+struct IsLessOrEqual {
+  bool operator()(const T& l, const T& r) const { return l <= r; }
+};
+template <class T, class TLessOrEqual = IsLessOrEqual<T>>
+void QuickSort(T* v, T left, T right,
+               const TLessOrEqual& is_less = TLessOrEqual()) {
+  T x = v[(left + right) / 2], buffer;
+  T begin = left, end = right;
+  while (is_less(begin, end)) {
+    while (v[begin] < x) {
+      begin++;
     }
-
-    std::swap(v[i], v[j]);
-  }
-}
-void QuickSort(std::vector<int>& v, int low, int high) {
-  if (low < high) {
-    int pivot_index = Partition(v, low, high);
-    QuickSort(v, low, pivot_index);
-    QuickSort(v, pivot_index + 1, high);
-  }
-}
-void InsertionSort(std::vector<int>& v, int n) {
-  int pivote, flag;
-  for (int i = 1; i < n; i++) {
-    pivote = v[i];
-    flag = i - 1;
-    while (flag >= 0 and v[flag] > pivote) {
-      v[flag + 1] = v[flag];
-      flag--;
+    while (v[end] > x) {
+      end--;
     }
-    v[flag + 1] = pivote;
+    if (is_less(begin, end)) {
+      buffer = v[begin];
+      v[begin] = v[end];
+      v[end] = buffer;
+      begin++;
+      end--;
+    }
+  }
+  if (left < end) {
+    QuickSort(v, left, end);
+  }
+  if (begin < right) {
+    QuickSort(v, begin, right);
   }
 }
+
 int main() {
   int n;
   std::cin >> n;
-  std::vector<int> v(n);
+  int* v = new int[n];
   for (int i = 0; i < n; i++) {
     std::cin >> v[i];
   }
-  if (n >= 256) {
-    QuickSort(v, 0, n - 1);
-  } else {
-    InsertionSort(v, n);
-  }
+  QuickSort<int>(v, 0, n - 1);
   for (int i = 0; i < n; i++) {
-    std::cout << v[i] << '\n';
+    std::cout << v[i] << " ";
   }
+  std::cout << '\n';
+  delete[] v;
+  return 0;
 }
