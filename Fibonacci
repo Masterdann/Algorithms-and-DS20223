@@ -1,0 +1,38 @@
+#include <iostream>
+template <class T>
+struct Fibonnaci {
+  Fibonnaci(T n) { std::cout << Fib(n) << std::endl; }
+  T Fib(T n) {
+    T F[2][2] = {{1, 1}, {1, 0}};
+    if (n == 0) return 0;
+    Power(F, n - 1);
+
+    return F[0][0];
+  }
+
+  void Power(T F[2][2], T n) {
+    if (n == 0 || n == 1) return;
+    T M[2][2] = {{1, 1}, {1, 0}};
+    Power(F, n / 2);
+    Multiply(F, F);
+    if (n % 2 != 0) Multiply(F, M);
+  }
+
+  void Multiply(T F[2][2], T M[2][2]) {
+    T x = F[0][0] * M[0][0] + F[0][1] * M[1][0];
+    T y = F[0][0] * M[0][1] + F[0][1] * M[1][1];
+    T z = F[1][0] * M[0][0] + F[1][1] * M[1][0];
+    T w = F[1][0] * M[0][1] + F[1][1] * M[1][1];
+
+    F[0][0] = x % 1000003;
+    F[0][1] = y % 1000003;
+    F[1][0] = z % 1000003;
+    F[1][1] = w % 1000003;
+  }
+};
+int main() {
+  unsigned long long int n;
+  std::cin >> n;
+  Fibonnaci<unsigned long long int> NthFibonacci(n - 1);
+  return 0;
+}
