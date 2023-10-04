@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+
+template <class T>
+struct Grasshoper {
+  Grasshoper(T n) { std::cout << CountWays(n) << std::endl; }
+  std::vector<std::vector<T>> MatrixExponentiation(
+      std::vector<std::vector<T>>& A, T n) {
+    int size = A.size();
+    std::vector<std::vector<T>> result(size, std::vector<T>(size));
+    for (int i = 0; i < size; i++) {
+      result[i][i] = 1;
+    }
+    while (n > 0) {
+      if (n % 2 == 1) {
+        std::vector<std::vector<T>> temp(size, std::vector<T>(size));
+        for (int i = 0; i < size; i++) {
+          for (int j = 0; j < size; j++) {
+            for (int k = 0; k < size; k++) {
+              temp[i][j] = (temp[i][j] + result[i][k] * A[k][j]) % 1000003;
+            }
+          }
+        }
+        result = temp;
+      }
+      std::vector<std::vector<T>> temp(size, std::vector<T>(size));
+      for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+          for (int k = 0; k < size; k++) {
+            temp[i][j] = (temp[i][j] + A[i][k] * A[k][j]) % 1000003;
+          }
+        }
+      }
+      A = temp;
+      n /= 2;
+    }
+
+    return result;
+  }
+
+  T CountWays(T n) {
+    std::vector<std::vector<T>> A = {{1, 1, 1, 1, 1},
+                                     {1, 0, 0, 0, 0},
+                                     {0, 1, 0, 0, 0},
+                                     {0, 0, 1, 0, 0},
+                                     {0, 0, 0, 1, 0}};
+
+    std::vector<std::vector<T>> result = MatrixExponentiation(A, n);
+
+    return result[0][0];
+  }
+};
+int main() {
+  unsigned long long int n;
+  std::cin >> n;
+  Grasshoper<unsigned long long int> Nthways(n - 1);
+}
