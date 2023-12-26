@@ -1,0 +1,70 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+class Graph {
+ private:
+  int num_nodes_;
+  vector<vector<pair<int, int>>> adj_;
+
+ public:
+  Graph(int n) {
+    num_nodes_ = n;
+    adj_.resize(n);
+  }
+
+  void AddEdge(int u, int v, int weight) { adj_[u].emplace_back(v, weight); }
+
+  int FindMinPrice(int u, int v, int dist_max) {
+    vector<int> dist(num_nodes_, dist_max);
+    priority_queue<pair<int, int>, vector<pair<int, int>>,
+                   greater<pair<int, int>>>
+        pq;
+    dist[u] = 0;
+    pq.emplace(0, u);
+    while (!pq.empty()) {
+      int curr_node = pq.top().second;
+      int curr_dist = pq.top().first;
+      pq.pop();
+      if (curr_node == v) {
+        return curr_dist;
+      }
+      if (curr_dist > dist_max) {
+        return dist_max;
+      }
+      for (const auto& neighbor : adj_[curr_node]) {
+        int next_node = neighbor.first;
+        int weight = neighbor.second;
+        int next_dist = curr_dist + weight;
+        if (next_dist < dist[next_node]) {
+          dist[next_node] = next_dist;
+          pq.emplace(next_dist, next_node);
+        }
+      }
+    }
+    return -1;
+  }
+};
+
+int main() {
+  int a, b, m, u, v;
+  std::cin >> a >> b >> m >> u >> v;
+  Graph graph(m);
+  for (long long int u = 0; u < m; u++) {
+    long next_node1 = (u + 1) % m;
+    long long int next_node2 = (u * u + 1);
+    next_node2 = next_node2 % m;
+    graph.AddEdge(int(u), int(next_node1), a);
+    graph.AddEdge(int(u), int(next_node2), b);
+  }
+  if (a == 0 || b == 0) {
+    std::cout << 0 << '\n';
+  } else {
+    int dist_max = 999999 * a;
+    int min_price = graph.FindMinPrice(u, v, dist_max);
+    std::cout << min_price << '\n';
+  }
+  return 0;
+}
