@@ -1,0 +1,68 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+
+class Graph {
+ private:
+  int V_;
+  std::vector<std::vector<std::pair<int, int>>> adj_;
+
+ public:
+  int maxi = 1000000009;
+  Graph(int v) {
+    this->V_ = v;
+    adj_.resize(v);
+  }
+
+  void AddEdge(int u, int v, int weight) {
+    adj_[u].push_back(std::make_pair(v, weight));
+  }
+
+  int Dijkstra(int src, int dest, int num_paths) {
+    std::vector<int> dist(V_, maxi);
+    std::vector<int> paths(V_, 0);
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>,
+                        std::greater<std::pair<int, int>>>
+        pq;
+
+    dist[src] = 0;
+    paths[src] = 0;
+    pq.push(std::make_pair(0, src));
+
+    while (!pq.empty()) {
+      int u = pq.top().second;
+      pq.pop();
+
+      for (auto& neighbor : adj_[u]) {
+        int v = neighbor.first;
+        int weight = neighbor.second;
+        if (dist[u] + weight < dist[v] && paths[u] < num_paths) {
+          dist[v] = dist[u] + weight;
+          paths[v] = paths[u] + 1;
+          pq.push(std::make_pair(dist[v], v));
+        }
+      }
+    }
+    return dist[dest];
+  }
+};
+
+int main() {
+  int n, m;
+  int src, dest, num_paths;
+  std::cin >> n >> m >> num_paths >> src >> dest;
+  Graph graph(n);
+  for (int i = 0; i < m; i++) {
+    int u, v, weight;
+    std::cin >> u >> v >> weight;
+    graph.AddEdge(u - 1, v - 1, weight);
+  }
+  int maxii = 1000000009;
+  int shortest_distance = graph.Dijkstra(src - 1, dest - 1, num_paths);
+  if (shortest_distance == maxii) {
+    std::cout << -1 << '\n';
+  } else {
+    std::cout << shortest_distance << '\n';
+  }
+  return 0;
+}
