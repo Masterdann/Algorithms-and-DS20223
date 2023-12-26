@@ -1,0 +1,58 @@
+#include <iomanip>
+#include <iostream>
+#include <queue>
+#include <vector>
+class Graph {
+ private:
+  int V_;
+  std::vector<std::vector<std::pair<int, double>>> adj_;
+
+ public:
+  Graph(int v) {
+    this->V_ = v;
+    adj_.resize(v);
+  }
+
+  void AddEdge(int u, int v, double weight) {
+    adj_[u].push_back(std::pair<int, double>(v, weight));
+    adj_[v].push_back(std::pair<int, double>(u, weight));
+  }
+  double Dijkstra(int src, int dest) {
+    std::vector<double> dist(V_, double(1.00));
+    std::priority_queue<std::pair<double, int>,
+                        std::vector<std::pair<double, int>>,
+                        std::greater<std::pair<double, int>>>
+        pq;
+    dist[src] = double(0);
+    pq.push(std::pair<double, int>(double(0), src));
+    while (!pq.empty()) {
+      int u = pq.top().second;
+      pq.pop();
+      for (auto neighbor : adj_[u]) {
+        int v = neighbor.first;
+        double weight = neighbor.second;
+        if (dist[u] + weight - dist[u] * weight < dist[v]) {
+          dist[v] = dist[u] + weight - dist[u] * weight;
+          pq.push(std::pair<double, int>(dist[v], v));
+        }
+      }
+    }
+    return dist[dest];
+  }
+};
+
+int main() {
+  int n, m;
+  int src, dest;
+  std::cin >> n >> m >> src >> dest;
+  Graph graph(n);
+  for (int i = 0; i < m; i++) {
+    int u, v, weight;
+    std::cin >> u >> v >> weight;
+    graph.AddEdge(u - 1, v - 1, double((double(weight)) / double(100)));
+  }
+  double shortest_distance = graph.Dijkstra(src - 1, dest - 1);
+  std::cout << std::setprecision(2);
+  std::cout << std::noshowpoint << shortest_distance << '\n';
+  return 0;
+}
