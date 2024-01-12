@@ -1,0 +1,63 @@
+#include <algorithm>
+#include <iostream>
+#include <queue>
+#include <vector>
+
+template <typename T>
+class Graph {
+ public:
+  void Init(int n) { adjacencyList_ = std::vector<std::vector<T>>(n); }
+  void AddEdge(const T& source, const T& destination) {
+    adjacencyList_[source].push_back(destination);
+  }
+
+  std::vector<int> BFS(const T& start_node) {
+    std::queue<T> queue;
+    std::vector<bool> visited(adjacencyList_.size(), false);
+    std::vector<int> distances(adjacencyList_.size());
+
+    queue.push(start_node);
+    visited[start_node] = true;
+    distances[start_node] = 0;
+
+    while (!queue.empty()) {
+      T current_node = queue.front();
+      queue.pop();
+
+      for (const auto& adjacent_node : adjacencyList_[current_node]) {
+        if (!visited[adjacent_node]) {
+          queue.push(adjacent_node);
+          visited[adjacent_node] = true;
+          distances[adjacent_node] = distances[current_node] + 1;
+        }
+      }
+    }
+
+    return distances;
+  }
+
+ private:
+  std::vector<std::vector<T>> adjacencyList_;
+};
+
+int main() {
+  int n, m, leon, matilda, milk_s;
+  std::cin >> n >> m >> leon >> matilda >> milk_s;
+  Graph<int> graph;
+  graph.Init(n + 1);
+  for (int i = 0; i < m; i++) {
+    int x, y;
+    std::cin >> x >> y;
+    graph.AddEdge(x, y);
+    graph.AddEdge(y, x);
+  }
+  std::vector<int> dist_leon = graph.BFS(leon);
+  std::vector<int> dist_matilda = graph.BFS(matilda);
+  std::vector<int> dist_milk = graph.BFS(milk_s);
+  int ans = 100005;
+  for (int i = 1; i <= n; i++) {
+    ans = std::min(ans, dist_milk[i] + dist_leon[i] + dist_matilda[i]);
+  }
+  std::cout << ans << '\n';
+  return 0;
+}
