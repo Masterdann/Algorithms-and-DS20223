@@ -1,0 +1,144 @@
+#include <algorithm>
+#include <iostream>
+#include <stack>
+#include <vector>
+
+class Graph {
+  int V_;
+  std::vector<std::vector<int>> adj_;
+
+  void SCCUtil(int u, std::vector<std::pair<int, int>>& disc_low,
+               std::stack<int>& st, std::vector<bool>& stack_member,
+               std::vector<std::vector<int>>& sc_cs);
+
+ public:
+  Graph(int v);
+  void AddEdge(int u, int v);
+  std::vector<std::vector<int>> FindScCs();
+
+  Graph GetDAG(std::vector<std::vector<int>>& sc_cs);
+  int FindMaxVertices(std::vector<std::vector<int>>& sc_cs);
+};
+
+Graph::Graph(int v) {
+  V_ = v;
+  adj_ = std::vector<std::vector<int>>(v);
+}
+void Graph::AddEdge(int u, int v) {
+  if (u >= V_ or u < 0) {
+    return;
+  }
+  adj_[u].push_back(v);
+}
+
+void Graph::SCCUtil(int u, std::vector<std::pair<int, int>>& disc_low,
+                    std::stack<int>& st, std::vector<bool>& stack_member,
+                    std::vector<std::vector<int>>& sc_cs) {
+  static int time = 0;
+  disc_low[u].first = disc_low[u].second = ++time;
+  st.push(u);
+  stack_member[u] = true;
+
+  for (const auto& v : adj_[u]) {
+    if (disc_low[v].first == -1) {
+      SCCUtil(v, disc_low, st, stack_member, sc_cs);
+      disc_low[u].second = std::min(disc_low[u].second, disc_low[v].second);
+    } else if (stack_member[v]) {
+      disc_low[u].second = std::min(disc_low[u].second, disc_low[v].first);
+    }
+  }
+
+  if (disc_low[u].first == disc_low[u].second) {
+    std::vector<int> current_scc;
+    while (st.top() != u) {
+      int v = st.top();
+      st.pop();
+      stack_member[v] = false;
+      current_scc.push_back(v);
+    }
+
+    int v = st.top();
+    st.pop();
+    stack_member[v] = false;
+    current_scc.push_back(v);
+    sc_cs.push_back(current_scc);
+  }
+}
+
+std::vector<std::vector<int>> Graph::FindScCs() {
+  std::vector<std::pair<int, int>> disc_low(V_, std::make_pair(-1, -1));
+  std::vector<bool> stack_member(V_, false);
+  std::stack<int> st;
+  std::vector<std::vector<int>> sc_cs;
+
+  for (int i = 0; i < V_; ++i) {
+    if (disc_low[i].first == -1) {
+      SCCUtil(i, disc_low, st, stack_member, sc_cs);
+    }
+  }
+
+  return sc_cs;
+}
+
+Graph Graph::GetDAG(std::vector<std::vector<int>>& sc_cs) {
+  int num_sc_cs = sc_cs.size();
+  Graph dag(num_sc_cs);
+  std::vector<int> scc_map(V_, -1);
+
+  for (int i = 0; i < num_sc_cs; ++i) {
+    for (const auto& v : sc_cs[i]) {
+      scc_map[v] = i;
+    }
+  }
+
+  for (int u = 0; u < V_; ++u) {
+    for (const auto& v : adj_[u]) {
+      if (scc_map[u] != scc_map[v]) {
+        dag.AddEdge(scc_map[u], scc_map[v]);
+      }
+    }
+  }
+
+  return dag;
+}
+
+int Graph::FindMaxVertices(std::vector<std::vector<int>>& sc_cs) {
+  int num_sc_cs = sc_cs.size();
+  std::vector<int> in_degree(num_sc_cs, 0);
+  std::vector<int> out_degree(num_sc_cs, 0);
+
+  for (int u = 0; u < num_sc_cs; ++u) {
+    for (const auto& v : adj_[u]) {
+      if (u != v) {
+        ++out_degree[u];
+        ++in_degree[v];
+      }
+    }
+  }
+
+  int zero_in_degree = std::count(in_degree.begin(), in_degree.end(), 0);
+  int zero_out_degree = std::count(out_degree.begin(), out_degree.end(), 0);
+  return std::max(zero_in_degree, zero_out_degree);
+}
+
+int main() {
+  int n, m;
+  std::cin >> n >> m;
+
+  Graph graph(n);
+
+  for (int i = 0; i < m; ++i) {
+    int u, v;
+    std::cin >> u >> v;
+    graph.AddEdge(u - 1, v - 1);
+  }
+
+  std::vector<std::vector<int>> sc_cs = graph.FindScCs();
+  Graph dag = graph.GetDAG(sc_cs);
+  int max_vertices = dag.FindMaxVertices(sc_cs);
+  if (dag.FindScCs().size() == 1) {
+    std::cout << 0 << '\n';
+  } else {
+    std::cout << max_vertices << '\n';
+  }
+}
